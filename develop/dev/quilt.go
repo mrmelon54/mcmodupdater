@@ -13,6 +13,7 @@ import (
 	"github.com/komkom/toml"
 	"github.com/magiconair/properties"
 	"io"
+	"io/fs"
 	"path"
 )
 
@@ -63,7 +64,7 @@ func (q Quilt) FetchCalls() []develop.DevFetch {
 	}
 }
 
-func (q Quilt) ValidTree(tree *object.Tree) bool {
+func (q Quilt) ValidTree(tree fs.FS) bool {
 	_, ok := genericLoaderMetaFile(tree, quiltLoaderMetaPaths)
 	return ok
 }

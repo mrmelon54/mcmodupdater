@@ -10,6 +10,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/magiconair/properties"
 	"io"
+	"io/fs"
 	"path"
 )
 
@@ -50,7 +51,7 @@ func (f Forge) FetchCalls() []develop.DevFetch {
 	}
 }
 
-func (f Forge) ValidTree(tree *object.Tree) bool {
+func (f Forge) ValidTree(tree fs.FS) bool {
 	_, ok := genericLoaderMetaFile(tree, forgeLoaderMetaPaths)
 	return ok
 }

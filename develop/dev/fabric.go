@@ -11,6 +11,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/magiconair/properties"
 	"io"
+	"io/fs"
 	"path"
 )
 
@@ -57,13 +58,8 @@ func (f Fabric) FetchCalls() []develop.DevFetch {
 	}
 }
 
-func (f Fabric) ValidTree(tree *object.Tree) bool {
-	_, ok := genericLoaderMetaFile(tree, fabricLoaderMetaPaths)
-	return ok
-}
-
-func (f Fabric) ValidTreeArch(tree *object.Tree) bool {
-	_, ok := genericLoaderMetaFile(tree, genericAppendToPaths(fabricLoaderMetaPaths, "fabric"))
+func (f Fabric) ValidTree(tree fs.StatFS) bool {
+	_, ok := genericCheckOnePathExists(tree, fabricLoaderMetaPaths...)
 	return ok
 }
 

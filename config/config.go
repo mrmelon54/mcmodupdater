@@ -2,6 +2,7 @@ package config
 
 type Config struct {
 	Develop DevelopConfig `yaml:"develop"`
+	Cache   bool          `yaml:"cache"`
 }
 
 type DevelopConfig struct {

@@ -4,13 +4,11 @@ import (
 	"errors"
 	"github.com/MrMelon54/mcmodupdater/config"
 	"github.com/MrMelon54/mcmodupdater/develop"
-	"github.com/go-git/go-git/v5/plumbing/object"
 	"io"
 	"io/fs"
 	"net/http"
 	"os"
 	"path"
-	"regexp"
 	"time"
 )
 
@@ -20,7 +18,7 @@ var (
 	DevelopPlatformsFactory = []func(config.DevelopConfig, string) develop.Develop{
 		// Architectury MUST be handled separately
 		ForFabric,
-		ForForge, //TODO: add Forge options... requires someone to find a forge version api
+		ForForge,
 		ForQuilt,
 		//TODO: add LiteLoader options.. https://dl.liteloader.com/versions/versions.json
 	}
@@ -30,6 +28,10 @@ var (
 		PlatformQuilt,
 	}
 )
+
+type platformProvider interface {
+	Platforms() map[develop.DevPlatform]develop.Develop
+}
 
 func genericPlatformFetch[T any](url, cache string, cbR func(io.Reader, *T) error, cbW func(io.Writer, T) error) (t T, err error) {
 	err = genericPlatformCacheLoad[T](cache, &t, cbR)
@@ -82,18 +84,17 @@ func mapProp(out map[develop.PropVersion]string, target develop.PropVersion, in 
 	}
 }
 
-func genericLoaderMetaFile(tree *object.Tree, v []string) (string, bool) {
-	for _, i := range v {
-		_, err := tree.File(i)
-		if err == nil {
+func genericCheckOnePathExists(tree fs.StatFS, name ...string) (string, bool) {
+	for _, i := range name {
+		if genericCheckPathExists(tree, i) {
 			return i, true
 		}
 	}
 	return "", false
 }
 
-func genericCheckPathExists(tree *object.Tree, name string) bool {
-	_, err := tree.File(name)
+func genericCheckPathExists(tree fs.StatFS, name string) bool {
+	_, err := tree.Stat(name)
 	return err == nil
 }
 
@@ -103,8 +104,4 @@ func genericAppendToPaths(elem []string, prefix string) []string {
 		a[i] = path.Join(prefix, elem[i])
 	}
 	return a
-}
-
-func filterMavenVersions(regexp *regexp.Regexp) {
-
 }

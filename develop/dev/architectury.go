@@ -9,13 +9,12 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/magiconair/properties"
 	"io"
+	"io/fs"
 	"path"
 	"sort"
 )
 
 var PlatformArchitectury = develop.DevPlatform{Name: "Architectury", Branch: "arch-"}
-
-var _ develop.Develop = &Architectury{}
 
 type Architectury struct {
 	Conf         config.ArchitecturyDevelopConfig
@@ -29,12 +28,11 @@ type ArchitecturyMeta struct {
 	Api  meta.ArchitecturyApiMeta
 }
 
-func ForArchitectury(conf config.DevelopConfig, cache string) *Architectury {
+func ForArchitectury(conf config.DevelopConfig, cache string) develop.Develop {
 	return &Architectury{
-		Conf:         conf.Architectury,
-		Meta:         &ArchitecturyMeta{},
-		Cache:        path.Join(cache, "architectury"),
-		SubPlatforms: make(map[develop.DevPlatform]develop.Develop),
+		Conf:  conf.Architectury,
+		Meta:  &ArchitecturyMeta{},
+		Cache: path.Join(cache, "architectury"),
 	}
 }
 
@@ -46,11 +44,28 @@ func (f *Architectury) FetchCalls() []develop.DevFetch {
 	return []develop.DevFetch{{"Architectury", f.fetchArchApi}}
 }
 
-func (f *Architectury) ValidTree(tree *object.Tree) bool {
+func (f *Architectury) ValidTree(tree fs.StatFS) bool {
 	if !genericCheckPathExists(tree, "settings.gradle") {
 		return false
 	}
-	return genericCheckPathExists(tree, "common/build.gradle")
+	if !genericCheckPathExists(tree, "common/build.gradle") {
+		return false
+	}
+
+	for _, i := range Platforms {
+		if i == PlatformArchitectury {
+			continue
+		}
+		f.SubPlatforms
+	}
+	// probably architectury, now detect the sub-platforms
+	archPlats := make(map[develop.DevPlatform]develop.Develop)
+	for _, i := range m.platforms {
+		if i.ValidTreeArch(tree) {
+			archPlats[i.Platform()] = i
+			continue
+		}
+	}
 }
 
 func (f *Architectury) ValidTreeArch(_ *object.Tree) bool {
