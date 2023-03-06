@@ -6,7 +6,6 @@ import (
 	"github.com/MrMelon54/mcmodupdater/config"
 	"github.com/MrMelon54/mcmodupdater/develop"
 	"github.com/MrMelon54/mcmodupdater/meta"
-	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/magiconair/properties"
 	"io"
 	"io/fs"
@@ -44,7 +43,7 @@ func (f *Architectury) FetchCalls() []develop.DevFetch {
 	return []develop.DevFetch{{"Architectury", f.fetchArchApi}}
 }
 
-func (f *Architectury) ValidTree(tree fs.StatFS) bool {
+func (f *Architectury) ValidTree(tree fs.FS) bool {
 	if !genericCheckPathExists(tree, "settings.gradle") {
 		return false
 	}
@@ -52,36 +51,33 @@ func (f *Architectury) ValidTree(tree fs.StatFS) bool {
 		return false
 	}
 
+	// probably architectury, now detect the sub-platforms
 	for _, i := range Platforms {
 		if i == PlatformArchitectury {
 			continue
 		}
-		f.SubPlatforms
-	}
-	// probably architectury, now detect the sub-platforms
-	archPlats := make(map[develop.DevPlatform]develop.Develop)
-	for _, i := range m.platforms {
-		if i.ValidTreeArch(tree) {
-			archPlats[i.Platform()] = i
+		sub, err := fs.Sub(tree, i.Name)
+		if err != nil {
 			continue
 		}
+		if !f.SubPlatforms[i].ValidTree(sub) {
+			delete(f.SubPlatforms, i)
+		}
 	}
+
+	return true
 }
 
-func (f *Architectury) ValidTreeArch(_ *object.Tree) bool {
-	return false
-}
-
-func (f *Architectury) ReadVersionFile(tree *object.Tree) (map[develop.PropVersion]string, error) {
-	gradlePropFile, err := tree.File("gradle.properties")
+func (f *Architectury) ReadVersionFile(tree fs.FS) (map[develop.PropVersion]string, error) {
+	gradlePropFile, err := tree.Open("gradle.properties")
+	if err != nil {
+		return nil, fmt.Errorf("open gradle.properties: %w", err)
+	}
+	gradlePropContent, err := io.ReadAll(gradlePropFile)
 	if err != nil {
 		return nil, fmt.Errorf("read gradle.properties: %w", err)
 	}
-	contents, err := gradlePropFile.Contents()
-	if err != nil {
-		return nil, fmt.Errorf("contents gradle.properties: %w", err)
-	}
-	prop, err := properties.LoadString(contents)
+	prop, err := properties.Load(gradlePropContent, 0)
 	if err != nil {
 		return nil, err
 	}

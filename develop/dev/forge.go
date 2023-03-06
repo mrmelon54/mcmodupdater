@@ -7,7 +7,6 @@ import (
 	"github.com/MrMelon54/mcmodupdater/develop"
 	"github.com/MrMelon54/mcmodupdater/meta"
 	"github.com/MrMelon54/mcmodupdater/meta/shared"
-	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/magiconair/properties"
 	"io"
 	"io/fs"
@@ -15,7 +14,7 @@ import (
 )
 
 var (
-	PlatformForge        = develop.DevPlatform{Name: "Forge", Branch: "forge-"}
+	PlatformForge        = develop.DevPlatform{Name: "Forge", Branch: "forge-", Sub: "forge"}
 	forgeLoaderMetaPaths = []string{
 		"src/main/resources/META-INF/mods.toml",
 		"resources/META-INF/mods.toml",
@@ -41,36 +40,31 @@ type ForgeMeta struct {
 	Api  meta.ForgeApiMeta
 }
 
-func (f Forge) Platform() develop.DevPlatform {
+func (f *Forge) Platform() develop.DevPlatform {
 	return PlatformForge
 }
 
-func (f Forge) FetchCalls() []develop.DevFetch {
+func (f *Forge) FetchCalls() []develop.DevFetch {
 	return []develop.DevFetch{
 		{"API", f.fetchApi},
 	}
 }
 
-func (f Forge) ValidTree(tree fs.FS) bool {
-	_, ok := genericLoaderMetaFile(tree, forgeLoaderMetaPaths)
+func (f *Forge) ValidTree(tree fs.FS) bool {
+	_, ok := genericCheckOnePathExists(tree, forgeLoaderMetaPaths...)
 	return ok
 }
 
-func (f Forge) ValidTreeArch(tree *object.Tree) bool {
-	_, ok := genericLoaderMetaFile(tree, genericAppendToPaths(forgeLoaderMetaPaths, "forge"))
-	return ok
-}
-
-func (f Forge) ReadVersionFile(tree *object.Tree) (map[develop.PropVersion]string, error) {
-	gradlePropFile, err := tree.File("gradle.properties")
+func (f *Forge) ReadVersionFile(tree fs.FS) (map[develop.PropVersion]string, error) {
+	gradlePropFile, err := tree.Open("gradle.properties")
+	if err != nil {
+		return nil, fmt.Errorf("open gradle.properties: %w", err)
+	}
+	gradlePropContent, err := io.ReadAll(gradlePropFile)
 	if err != nil {
 		return nil, fmt.Errorf("read gradle.properties: %w", err)
 	}
-	contents, err := gradlePropFile.Contents()
-	if err != nil {
-		return nil, fmt.Errorf("contents gradle.properties: %w", err)
-	}
-	prop, err := properties.LoadString(contents)
+	prop, err := properties.Load(gradlePropContent, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +88,7 @@ func (f *Forge) LatestVersion(prop develop.PropVersion, mcVersion string) (strin
 	return "", false
 }
 
-func (f Forge) fetchApi() (err error) {
+func (f *Forge) fetchApi() (err error) {
 	f.Meta.Api, err = genericPlatformFetch[meta.ForgeApiMeta](f.Conf.Api, path.Join(f.Cache, "api.json"), func(r io.Reader, m *meta.ForgeApiMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.ForgeApiMeta) error {

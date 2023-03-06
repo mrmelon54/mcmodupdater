@@ -1,16 +1,14 @@
 package develop
 
 import (
-	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/go-git/go-git/v5/plumbing/object"
 	"io/fs"
 )
 
 type Develop interface {
 	Platform() DevPlatform
 	FetchCalls() []DevFetch
-	ValidTree(tree fs.StatFS) bool
-	ReadVersionFile(tree *object.Tree) (map[PropVersion]string, error)
+	ValidTree(tree fs.FS) bool
+	ReadVersionFile(tree fs.FS) (map[PropVersion]string, error)
 	LatestVersion(prop PropVersion, mcVersion string) (string, bool)
 }
 
@@ -26,7 +24,6 @@ type DevFetch struct {
 }
 
 type BranchInfo struct {
-	Plumb    *plumbing.Reference
 	Platform Develop
 	Versions map[PropVersion]string
 }

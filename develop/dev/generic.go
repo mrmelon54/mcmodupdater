@@ -84,7 +84,7 @@ func mapProp(out map[develop.PropVersion]string, target develop.PropVersion, in 
 	}
 }
 
-func genericCheckOnePathExists(tree fs.StatFS, name ...string) (string, bool) {
+func genericCheckOnePathExists(tree fs.FS, name ...string) (string, bool) {
 	for _, i := range name {
 		if genericCheckPathExists(tree, i) {
 			return i, true
@@ -93,8 +93,8 @@ func genericCheckOnePathExists(tree fs.StatFS, name ...string) (string, bool) {
 	return "", false
 }
 
-func genericCheckPathExists(tree fs.StatFS, name string) bool {
-	_, err := tree.Stat(name)
+func genericCheckPathExists(tree fs.FS, name string) bool {
+	_, err := fs.Stat(tree, name)
 	return err == nil
 }
 

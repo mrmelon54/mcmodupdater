@@ -7,6 +7,7 @@ import (
 	"github.com/MrMelon54/mcmodupdater/config"
 	"github.com/MrMelon54/mcmodupdater/develop"
 	"github.com/MrMelon54/mcmodupdater/develop/dev"
+	"io/fs"
 	"os"
 )
 
@@ -37,7 +38,13 @@ func main() {
 	flag.StringVar(&mcVersion, "mc", "", "Select the Minecraft version to update to, defaults to the current version")
 	flag.Parse()
 
-	mcm, err := mcmodupdater.NewMcModUpdater(v.conf, v.repo, v.cwd)
+	mcm, err := mcmodupdater.NewMcModUpdater(conf)
+	if err != nil {
+		errPrintln("Error:", err)
+		os.Exit(1)
+	}
+
+	info, err := mcm.LoadTree(os.DirFS(cwd).(fs.StatFS))
 	if err != nil {
 		errPrintln("Error:", err)
 		os.Exit(1)

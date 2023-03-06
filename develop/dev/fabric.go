@@ -8,7 +8,6 @@ import (
 	"github.com/MrMelon54/mcmodupdater/develop"
 	"github.com/MrMelon54/mcmodupdater/meta"
 	"github.com/MrMelon54/mcmodupdater/meta/shared"
-	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/magiconair/properties"
 	"io"
 	"io/fs"
@@ -16,7 +15,7 @@ import (
 )
 
 var (
-	PlatformFabric        = develop.DevPlatform{Name: "Fabric", Branch: "fabric-"}
+	PlatformFabric        = develop.DevPlatform{Name: "Fabric", Branch: "fabric-", Sub: "fabric"}
 	fabricLoaderMetaPaths = []string{
 		"src/main/resources/fabric.mod.json",
 		"resources/fabric.mod.json",
@@ -45,11 +44,11 @@ func ForFabric(conf config.DevelopConfig, cache string) develop.Develop {
 	}
 }
 
-func (f Fabric) Platform() develop.DevPlatform {
+func (f *Fabric) Platform() develop.DevPlatform {
 	return PlatformFabric
 }
 
-func (f Fabric) FetchCalls() []develop.DevFetch {
+func (f *Fabric) FetchCalls() []develop.DevFetch {
 	return []develop.DevFetch{
 		{"Game", f.fetchGame},
 		{"Yarn", f.fetchYarn},
@@ -58,21 +57,21 @@ func (f Fabric) FetchCalls() []develop.DevFetch {
 	}
 }
 
-func (f Fabric) ValidTree(tree fs.StatFS) bool {
+func (f *Fabric) ValidTree(tree fs.FS) bool {
 	_, ok := genericCheckOnePathExists(tree, fabricLoaderMetaPaths...)
 	return ok
 }
 
-func (f Fabric) ReadVersionFile(tree *object.Tree) (map[develop.PropVersion]string, error) {
-	gradlePropFile, err := tree.File("gradle.properties")
+func (f *Fabric) ReadVersionFile(tree fs.FS) (map[develop.PropVersion]string, error) {
+	gradlePropFile, err := tree.Open("gradle.properties")
+	if err != nil {
+		return nil, fmt.Errorf("open gradle.properties: %w", err)
+	}
+	gradlePropContent, err := io.ReadAll(gradlePropFile)
 	if err != nil {
 		return nil, fmt.Errorf("read gradle.properties: %w", err)
 	}
-	contents, err := gradlePropFile.Contents()
-	if err != nil {
-		return nil, fmt.Errorf("contents gradle.properties: %w", err)
-	}
-	prop, err := properties.LoadString(contents)
+	prop, err := properties.Load(gradlePropContent, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +104,7 @@ func (f *Fabric) LatestVersion(prop develop.PropVersion, mcVersion string) (stri
 	return "", false
 }
 
-func (f Fabric) fetchGame() (err error) {
+func (f *Fabric) fetchGame() (err error) {
 	f.Meta.Game, err = genericPlatformFetch[meta.FabricGameMeta](f.Conf.Game, path.Join(f.Cache, "game.json"), func(r io.Reader, m *meta.FabricGameMeta) error {
 		return json.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.FabricGameMeta) error {
@@ -114,7 +113,7 @@ func (f Fabric) fetchGame() (err error) {
 	return err
 }
 
-func (f Fabric) fetchYarn() (err error) {
+func (f *Fabric) fetchYarn() (err error) {
 	f.Meta.Yarn, err = genericPlatformFetch[meta.FabricYarnMeta](f.Conf.Yarn, path.Join(f.Cache, "yarn.json"), func(r io.Reader, m *meta.FabricYarnMeta) error {
 		return json.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.FabricYarnMeta) error {
@@ -123,7 +122,7 @@ func (f Fabric) fetchYarn() (err error) {
 	return err
 }
 
-func (f Fabric) fetchLoader() (err error) {
+func (f *Fabric) fetchLoader() (err error) {
 	f.Meta.Loader, err = genericPlatformFetch[meta.FabricLoaderMeta](f.Conf.Loader, path.Join(f.Cache, "loader.json"), func(r io.Reader, m *meta.FabricLoaderMeta) error {
 		return json.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.FabricLoaderMeta) error {
@@ -132,7 +131,7 @@ func (f Fabric) fetchLoader() (err error) {
 	return err
 }
 
-func (f Fabric) fetchApi() (err error) {
+func (f *Fabric) fetchApi() (err error) {
 	f.Meta.Api, err = genericPlatformFetch[meta.FabricApiMeta](f.Conf.Api, path.Join(f.Cache, "api.json"), func(r io.Reader, m *meta.FabricApiMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.FabricApiMeta) error {

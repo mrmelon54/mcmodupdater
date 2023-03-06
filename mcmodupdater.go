@@ -56,18 +56,17 @@ func NewMcModUpdater(conf *config.Config) (*McModUpdater, error) {
 		platMap[i] = p.Name
 	}
 
-
 	return &McModUpdater{
 		cache:     cache,
 		platforms: plat,
-		platArch:  dev.ForArchitectury(conf.Develop, platCache),
+		platArch:  dev.ForArchitectury(conf.Develop, platCache).(*dev.Architectury),
 	}, nil
 }
 
 func (m *McModUpdater) PlatArch() *dev.Architectury                        { return m.platArch }
 func (m *McModUpdater) Platforms() map[develop.DevPlatform]develop.Develop { return m.platforms }
 
-func (m *McModUpdater) detectPlatformFromTree(tree fs.FS) (develop.Develop, bool) {
+func (m *McModUpdater) detectPlatformFromTree(tree fs.StatFS) (develop.Develop, bool) {
 	for _, i := range m.platforms {
 		if i.ValidTree(tree) {
 			return i, true
@@ -76,23 +75,19 @@ func (m *McModUpdater) detectPlatformFromTree(tree fs.FS) (develop.Develop, bool
 	return nil, false
 }
 
-func (m *McModUpdater) detectPlatformFromArchTree(tree fs.FS) (develop.Develop, bool) {
-	archPlats:=make(map[develop.DevPlatform]develop.Develop)
-	for _, i := range m.platforms {
-		if i.ValidTreeArch(tree) {
-			archPlats[i.Platform()]=i
-			continue
-		}
-	}
-}
-
 func (m *McModUpdater) LoadTree(tree fs.StatFS) (*develop.BranchInfo, error) {
-	useArch:=m.platArch.ValidTree(tree)
+	useArch := m.platArch.ValidTree(tree)
 
 	var platform develop.Develop
 	var ok bool
 
 	if useArch {
-		platform,ok:=
+		m.platArch.SubPlatforms = m.platforms
 	}
+
+	versions, err := platform.ReadVersionFile(tree)
+	if err != nil {
+		return nil, err
+	}
+
 }
