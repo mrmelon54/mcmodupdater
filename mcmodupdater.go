@@ -75,14 +75,20 @@ func (m *McModUpdater) detectPlatformFromTree(tree fs.StatFS) (develop.Develop, 
 	return nil, false
 }
 
-func (m *McModUpdater) LoadTree(tree fs.StatFS) (*develop.BranchInfo, error) {
+func (m *McModUpdater) LoadTree(tree fs.StatFS) (*develop.PlatformVersions, error) {
 	useArch := m.platArch.ValidTree(tree)
 
 	var platform develop.Develop
-	var ok bool
 
 	if useArch {
+		platform = m.platArch
 		m.platArch.SubPlatforms = m.platforms
+	} else {
+		for _, i := range m.platforms {
+			if i.ValidTree(tree) {
+				platform = i
+			}
+		}
 	}
 
 	versions, err := platform.ReadVersionFile(tree)
@@ -90,4 +96,8 @@ func (m *McModUpdater) LoadTree(tree fs.StatFS) (*develop.BranchInfo, error) {
 		return nil, err
 	}
 
+	return &develop.PlatformVersions{
+		Platform: platform,
+		Versions: versions,
+	}, nil
 }

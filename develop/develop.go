@@ -23,7 +23,7 @@ type DevFetch struct {
 	Call func() error
 }
 
-type BranchInfo struct {
+type PlatformVersions struct {
 	Platform Develop
 	Versions map[PropVersion]string
 }
