@@ -60,8 +60,10 @@ func (f *Architectury) ValidTree(tree fs.FS) bool {
 		if err != nil {
 			continue
 		}
-		if !f.SubPlatforms[i].ValidTree(sub) {
-			delete(f.SubPlatforms, i)
+		if subPlat, ok := f.SubPlatforms[i]; ok {
+			if !subPlat.ValidTree(sub) {
+				delete(f.SubPlatforms, i)
+			}
 		}
 	}
 

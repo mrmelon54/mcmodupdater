@@ -82,7 +82,10 @@ func (m *McModUpdater) LoadTree(tree fs.StatFS) (*develop.PlatformVersions, erro
 
 	if useArch {
 		platform = m.platArch
-		m.platArch.SubPlatforms = m.platforms
+		m.platArch.SubPlatforms = make(map[develop.DevPlatform]develop.Develop, len(m.platforms))
+		for k, v := range m.platforms {
+			m.platArch.SubPlatforms[k] = v
+		}
 	} else {
 		for _, i := range m.platforms {
 			if i.ValidTree(tree) {
