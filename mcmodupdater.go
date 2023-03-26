@@ -1,13 +1,17 @@
 package mcmodupdater
 
 import (
+	"bufio"
 	"github.com/MrMelon54/mcmodupdater/config"
 	"github.com/MrMelon54/mcmodupdater/develop"
 	"github.com/MrMelon54/mcmodupdater/develop/dev"
 	"github.com/MrMelon54/mcmodupdater/paths"
+	"github.com/magiconair/properties"
+	"io"
 	"io/fs"
 	"os"
 	"path"
+	"strings"
 )
 
 type McModUpdater struct {
@@ -103,4 +107,71 @@ func (m *McModUpdater) LoadTree(tree fs.StatFS) (*develop.PlatformVersions, erro
 		Platform: platform,
 		Versions: versions,
 	}, nil
+}
+
+func (m *McModUpdater) VersionUpdateList(info *develop.PlatformVersions) VersionUpdateList {
+	v := make(VersionUpdateList, 0, 11)
+	v = m.useIfExists(v, info, develop.ModVersion)
+	v = m.useIfExists(v, info, develop.MinecraftVersion)
+	v = m.useIfExistsUpdate(v, info, develop.ArchitecturyVersion)
+	v = m.useIfExistsUpdate(v, info, develop.FabricLoaderVersion)
+	v = m.useIfExistsUpdate(v, info, develop.FabricApiVersion)
+	v = m.useIfExistsUpdate(v, info, develop.YarnMappingsVersion)
+	v = m.useIfExistsUpdate(v, info, develop.ForgeVersion)
+	v = m.useIfExistsUpdate(v, info, develop.ForgeMappingsVersion)
+	v = m.useIfExistsUpdate(v, info, develop.QuiltLoaderVersion)
+	v = m.useIfExistsUpdate(v, info, develop.QuiltFabricApiVersion)
+	v = m.useIfExistsUpdate(v, info, develop.QuiltMappingsVersion)
+	return v
+}
+
+func (m *McModUpdater) useIfExists(v VersionUpdateList, branch *develop.PlatformVersions, k develop.PropVersion) VersionUpdateList {
+	if a, ok := branch.Versions[k]; ok {
+		v = append(v, VersionUpdateItem{k, a, ""})
+	}
+	return v
+}
+
+func (m *McModUpdater) useIfExistsUpdate(v VersionUpdateList, branch *develop.PlatformVersions, k develop.PropVersion) VersionUpdateList {
+	if a, ok := branch.Versions[k]; ok {
+		if l, ok := branch.Platform.LatestVersion(k, branch.Versions[develop.MinecraftVersion]); ok {
+			if a != l {
+				v = append(v, VersionUpdateItem{k, a, l})
+				return v
+			}
+		}
+		v = append(v, VersionUpdateItem{k, a, ""})
+		return v
+	}
+	return v
+}
+
+func (m *McModUpdater) UpdateToVersion(out io.StringWriter, tree fs.StatFS, ver map[develop.PropVersion]string) error {
+	gProp, err := tree.Open("gradle.properties")
+	if err != nil {
+		return err
+	}
+	//goland:noinspection GoUnhandledErrorResult
+	defer gProp.Close()
+
+	scanner := bufio.NewScanner(gProp)
+	for scanner.Scan() {
+		t := scanner.Text()
+		if strings.TrimSpace(t) != "" {
+			if oneProp, err := properties.LoadString(t); err == nil {
+				k := oneProp.Keys()
+				if len(k) == 1 {
+					if p, ok := develop.PropVersionFromKey(k[0]); ok {
+						if p2, ok := ver[p]; ok {
+							_, _ = out.WriteString(p.Key() + "=" + p2 + "\n")
+							continue
+						}
+					}
+				}
+			}
+		}
+		_, _ = out.WriteString(t + "\n")
+		continue
+	}
+	return nil
 }
