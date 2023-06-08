@@ -13,9 +13,8 @@ type Develop interface {
 }
 
 type DevPlatform struct {
-	Name   string
-	Branch string
-	Sub    string
+	Name string
+	Sub  string
 }
 
 type DevFetch struct {

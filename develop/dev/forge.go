@@ -7,14 +7,14 @@ import (
 	"github.com/MrMelon54/mcmodupdater/develop"
 	"github.com/MrMelon54/mcmodupdater/meta"
 	"github.com/MrMelon54/mcmodupdater/meta/shared"
+	"github.com/MrMelon54/mcmodupdater/utils"
 	"github.com/magiconair/properties"
 	"io"
 	"io/fs"
-	"path"
 )
 
 var (
-	PlatformForge        = develop.DevPlatform{Name: "Forge", Branch: "forge-", Sub: "forge"}
+	PlatformForge        = develop.DevPlatform{Name: "Forge", Sub: "forge"}
 	forgeLoaderMetaPaths = []string{
 		"src/main/resources/META-INF/mods.toml",
 		"resources/META-INF/mods.toml",
@@ -31,7 +31,7 @@ func ForForge(conf config.DevelopConfig, cache string) develop.Develop {
 	return &Forge{
 		Conf:  conf.Forge,
 		Meta:  &ForgeMeta{},
-		Cache: path.Join(cache, "forge"),
+		Cache: utils.PathJoin(cache, "forge"),
 	}
 }
 
@@ -89,7 +89,7 @@ func (f *Forge) LatestVersion(prop develop.PropVersion, mcVersion string) (strin
 }
 
 func (f *Forge) fetchApi() (err error) {
-	f.Meta.Api, err = genericPlatformFetch[meta.ForgeApiMeta](f.Conf.Api, path.Join(f.Cache, "api.json"), func(r io.Reader, m *meta.ForgeApiMeta) error {
+	f.Meta.Api, err = genericPlatformFetch[meta.ForgeApiMeta](f.Conf.Api, utils.PathJoin(f.Cache, "api.json"), func(r io.Reader, m *meta.ForgeApiMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.ForgeApiMeta) error {
 		return xml.NewEncoder(w).Encode(m)

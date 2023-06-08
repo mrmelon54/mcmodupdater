@@ -31,6 +31,7 @@ func DefaultConfig() Config {
 				QuiltedFabricApi:     "https://maven.quiltmc.org/repository/release/org/quiltmc/quilted-fabric-api/quilted-fabric-api/maven-metadata.xml",
 			},
 		},
+		Cache: true,
 	}
 }
 

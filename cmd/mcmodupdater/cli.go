@@ -18,6 +18,17 @@ func main() {
 		return
 	}
 
+	var dryFlag bool
+	var noCache bool
+	var mcVersion string
+	var wdPath string
+
+	flag.BoolVar(&dryFlag, "d", false, "Dry-run outputs the generated properties file instead of editing the file")
+	flag.BoolVar(&noCache, "nocache", false, "Use flag to disable cache")
+	flag.StringVar(&mcVersion, "mc", "", "Select the Minecraft version to update to, defaults to the current version")
+	flag.StringVar(&wdPath, "p", cwd, "Change project path (defaults to current directory)")
+	flag.Parse()
+
 	conf, err := config.Load()
 	if err != nil {
 		fmt.Println("Failed to load config")
@@ -30,13 +41,9 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	var dryFlag bool
-	var mcVersion string
-
-	flag.BoolVar(&dryFlag, "dry", false, "Dry-run outputs the generated properties file instead of editing the file")
-	flag.StringVar(&mcVersion, "mc", "", "Select the Minecraft version to update to, defaults to the current version")
-	flag.Parse()
+	if noCache {
+		conf.Cache = false
+	}
 
 	mcm, err := mcmodupdater.NewMcModUpdater(conf)
 	if err != nil {
@@ -44,7 +51,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	tree := os.DirFS(cwd).(fs.StatFS)
+	tree := os.DirFS(wdPath).(fs.StatFS)
 	info, err := mcm.LoadTree(tree)
 	if err != nil {
 		errPrintln("Error:", err)
@@ -91,6 +98,8 @@ func main() {
 		}
 	}
 
+	//oldMc := info.Versions[develop.MinecraftVersion]
+	info.Versions[develop.MinecraftVersion] = mcVersion
 	ver := mcm.VersionUpdateList(info)
 
 	if dryFlag {

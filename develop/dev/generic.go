@@ -66,6 +66,11 @@ func genericPlatformCacheLoad[T any](p string, t *T, cbR func(io.Reader, *T) err
 }
 
 func genericPlatformCacheSave[T any](p string, cbW func(io.Writer, T) error, t T) error {
+	// if path is empty then don't write
+	if p == "" {
+		return nil
+	}
+
 	err := os.MkdirAll(path.Dir(p), fs.ModePerm)
 	if err != nil {
 		return err
@@ -96,12 +101,4 @@ func genericCheckOnePathExists(tree fs.FS, name ...string) (string, bool) {
 func genericCheckPathExists(tree fs.FS, name string) bool {
 	_, err := fs.Stat(tree, name)
 	return err == nil
-}
-
-func genericAppendToPaths(elem []string, prefix string) []string {
-	a := make([]string, len(elem))
-	for i := range elem {
-		a[i] = path.Join(prefix, elem[i])
-	}
-	return a
 }

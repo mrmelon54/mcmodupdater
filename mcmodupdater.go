@@ -2,15 +2,16 @@ package mcmodupdater
 
 import (
 	"bufio"
+	"fmt"
 	"github.com/MrMelon54/mcmodupdater/config"
 	"github.com/MrMelon54/mcmodupdater/develop"
 	"github.com/MrMelon54/mcmodupdater/develop/dev"
 	"github.com/MrMelon54/mcmodupdater/paths"
+	"github.com/MrMelon54/mcmodupdater/utils"
 	"github.com/magiconair/properties"
 	"io"
 	"io/fs"
 	"os"
-	"path"
 	"strings"
 )
 
@@ -44,7 +45,7 @@ func NewMcModUpdater(conf *config.Config) (*McModUpdater, error) {
 	var cache, platCache string
 	if conf.Cache {
 		cache = paths.UserCacheDir()
-		platCache = path.Join(cache, "platforms")
+		platCache = utils.PathJoin(cache, "platforms")
 		err := os.MkdirAll(cache, fs.ModePerm)
 		if err != nil {
 			return nil, err
@@ -96,6 +97,10 @@ func (m *McModUpdater) LoadTree(tree fs.StatFS) (*develop.PlatformVersions, erro
 				platform = i
 			}
 		}
+	}
+
+	if platform == nil {
+		return nil, fmt.Errorf("cannot find valid platform")
 	}
 
 	versions, err := platform.ReadVersionFile(tree)

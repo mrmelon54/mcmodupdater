@@ -6,14 +6,14 @@ import (
 	"github.com/MrMelon54/mcmodupdater/config"
 	"github.com/MrMelon54/mcmodupdater/develop"
 	"github.com/MrMelon54/mcmodupdater/meta"
+	"github.com/MrMelon54/mcmodupdater/utils"
 	"github.com/magiconair/properties"
 	"io"
 	"io/fs"
-	"path"
 	"sort"
 )
 
-var PlatformArchitectury = develop.DevPlatform{Name: "Architectury", Branch: "arch-"}
+var PlatformArchitectury = develop.DevPlatform{Name: "Architectury"}
 
 type Architectury struct {
 	Conf         config.ArchitecturyDevelopConfig
@@ -31,7 +31,7 @@ func ForArchitectury(conf config.DevelopConfig, cache string) develop.Develop {
 	return &Architectury{
 		Conf:  conf.Architectury,
 		Meta:  &ArchitecturyMeta{},
-		Cache: path.Join(cache, "architectury"),
+		Cache: utils.PathJoin(cache, "architectury"),
 	}
 }
 
@@ -127,7 +127,7 @@ func (f *Architectury) SubPlatformNames() []string {
 }
 
 func (f *Architectury) fetchArchApi() (err error) {
-	f.Meta.Api, err = genericPlatformFetch[meta.ArchitecturyApiMeta](f.Conf.Api, path.Join(f.Cache, "api.json"), func(r io.Reader, m *meta.ArchitecturyApiMeta) error {
+	f.Meta.Api, err = genericPlatformFetch[meta.ArchitecturyApiMeta](f.Conf.Api, utils.PathJoin(f.Cache, "api.json"), func(r io.Reader, m *meta.ArchitecturyApiMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.ArchitecturyApiMeta) error {
 		return xml.NewEncoder(w).Encode(m)

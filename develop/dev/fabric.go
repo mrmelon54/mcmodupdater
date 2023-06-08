@@ -8,14 +8,14 @@ import (
 	"github.com/MrMelon54/mcmodupdater/develop"
 	"github.com/MrMelon54/mcmodupdater/meta"
 	"github.com/MrMelon54/mcmodupdater/meta/shared"
+	"github.com/MrMelon54/mcmodupdater/utils"
 	"github.com/magiconair/properties"
 	"io"
 	"io/fs"
-	"path"
 )
 
 var (
-	PlatformFabric        = develop.DevPlatform{Name: "Fabric", Branch: "fabric-", Sub: "fabric"}
+	PlatformFabric        = develop.DevPlatform{Name: "Fabric", Sub: "fabric"}
 	fabricLoaderMetaPaths = []string{
 		"src/main/resources/fabric.mod.json",
 		"resources/fabric.mod.json",
@@ -40,7 +40,7 @@ func ForFabric(conf config.DevelopConfig, cache string) develop.Develop {
 	return &Fabric{
 		Conf:  conf.Fabric,
 		Meta:  &FabricMeta{},
-		Cache: path.Join(cache, "fabric"),
+		Cache: utils.PathJoin(cache, "fabric"),
 	}
 }
 
@@ -105,7 +105,7 @@ func (f *Fabric) LatestVersion(prop develop.PropVersion, mcVersion string) (stri
 }
 
 func (f *Fabric) fetchGame() (err error) {
-	f.Meta.Game, err = genericPlatformFetch[meta.FabricGameMeta](f.Conf.Game, path.Join(f.Cache, "game.json"), func(r io.Reader, m *meta.FabricGameMeta) error {
+	f.Meta.Game, err = genericPlatformFetch[meta.FabricGameMeta](f.Conf.Game, utils.PathJoin(f.Cache, "game.json"), func(r io.Reader, m *meta.FabricGameMeta) error {
 		return json.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.FabricGameMeta) error {
 		return json.NewEncoder(w).Encode(m)
@@ -114,7 +114,7 @@ func (f *Fabric) fetchGame() (err error) {
 }
 
 func (f *Fabric) fetchYarn() (err error) {
-	f.Meta.Yarn, err = genericPlatformFetch[meta.FabricYarnMeta](f.Conf.Yarn, path.Join(f.Cache, "yarn.json"), func(r io.Reader, m *meta.FabricYarnMeta) error {
+	f.Meta.Yarn, err = genericPlatformFetch[meta.FabricYarnMeta](f.Conf.Yarn, utils.PathJoin(f.Cache, "yarn.json"), func(r io.Reader, m *meta.FabricYarnMeta) error {
 		return json.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.FabricYarnMeta) error {
 		return json.NewEncoder(w).Encode(m)
@@ -123,7 +123,7 @@ func (f *Fabric) fetchYarn() (err error) {
 }
 
 func (f *Fabric) fetchLoader() (err error) {
-	f.Meta.Loader, err = genericPlatformFetch[meta.FabricLoaderMeta](f.Conf.Loader, path.Join(f.Cache, "loader.json"), func(r io.Reader, m *meta.FabricLoaderMeta) error {
+	f.Meta.Loader, err = genericPlatformFetch[meta.FabricLoaderMeta](f.Conf.Loader, utils.PathJoin(f.Cache, "loader.json"), func(r io.Reader, m *meta.FabricLoaderMeta) error {
 		return json.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.FabricLoaderMeta) error {
 		return json.NewEncoder(w).Encode(m)
@@ -132,7 +132,7 @@ func (f *Fabric) fetchLoader() (err error) {
 }
 
 func (f *Fabric) fetchApi() (err error) {
-	f.Meta.Api, err = genericPlatformFetch[meta.FabricApiMeta](f.Conf.Api, path.Join(f.Cache, "api.json"), func(r io.Reader, m *meta.FabricApiMeta) error {
+	f.Meta.Api, err = genericPlatformFetch[meta.FabricApiMeta](f.Conf.Api, utils.PathJoin(f.Cache, "api.json"), func(r io.Reader, m *meta.FabricApiMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.FabricApiMeta) error {
 		return xml.NewEncoder(w).Encode(m)
