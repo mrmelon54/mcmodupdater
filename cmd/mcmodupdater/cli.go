@@ -44,32 +44,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	info, err := mcm.LoadTree(os.DirFS(cwd).(fs.StatFS))
+	tree := os.DirFS(cwd).(fs.StatFS)
+	info, err := mcm.LoadTree(tree)
 	if err != nil {
 		errPrintln("Error:", err)
-		os.Exit(1)
-	}
-
-	isClean, err := mcm.IsClean()
-	if err != nil {
-		errPrintln("[-] Failed to detect if the current worktree is clean:", err)
-		os.Exit(1)
-	}
-
-	if !isClean {
-		errPrintln("[-] The current worktree is dirty")
-		os.Exit(1)
-	}
-
-	branch, err := mcm.CurrentBranch()
-	if err != nil {
-		errPrintln("[-] Failed to find current branch:", err)
-		os.Exit(1)
-	}
-
-	info, err := mcm.LoadBranch(branch)
-	if err != nil {
-		errPrintln("[-] Failed to load branch info:", err)
 		os.Exit(1)
 	}
 
@@ -117,7 +95,7 @@ func main() {
 
 	if dryFlag {
 		// output the updated properties file to stdout
-		err := mcm.UpdateToVersion(os.Stdout, ver.ChangeToLatest())
+		err := mcm.UpdateToVersion(os.Stdout, tree, ver.ChangeToLatest())
 		if err != nil {
 			errPrintln("[-] Failed to update version numbers:", err)
 			os.Exit(1)
@@ -134,7 +112,7 @@ func main() {
 		defer uMcm.Close()
 
 		// output the updated properties file
-		err = mcm.UpdateToVersion(uMcm, ver.ChangeToLatest())
+		err = mcm.UpdateToVersion(uMcm, tree, ver.ChangeToLatest())
 		if err != nil {
 			errPrintln("[-] Failed to update version numbers:", err)
 			os.Exit(1)
