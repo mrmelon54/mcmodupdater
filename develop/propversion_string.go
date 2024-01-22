@@ -19,11 +19,12 @@ func _() {
 	_ = x[QuiltLoaderVersion-9]
 	_ = x[QuiltFabricApiVersion-10]
 	_ = x[QuiltMappingsVersion-11]
+	_ = x[NeoForgeVersion-12]
 }
 
-const _PropVersion_name = "VersionMinecraftArchitecturyFabric LoaderFabric APIYarn MappingsForgeForge MappingsQuilt LoaderQuilted Fabric APIQuilt Mappings"
+const _PropVersion_name = "VersionMinecraftArchitecturyFabric LoaderFabric APIYarn MappingsForgeForge MappingsQuilt LoaderQuilted Fabric APIQuilt MappingsNeoForgeVersion"
 
-var _PropVersion_index = [...]uint8{0, 7, 16, 28, 41, 51, 64, 69, 83, 95, 113, 127}
+var _PropVersion_index = [...]uint8{0, 7, 16, 28, 41, 51, 64, 69, 83, 95, 113, 127, 142}
 
 func (i PropVersion) String() string {
 	i -= 1

@@ -100,6 +100,9 @@ func (f *Architectury) ReadVersionFile(tree fs.FS) (map[develop.PropVersion]stri
 		mapProp(a, develop.QuiltLoaderVersion, propM)
 		mapProp(a, develop.QuiltFabricApiVersion, propM)
 	}
+	if _, ok := f.SubPlatforms[PlatformNeoForge]; ok {
+		mapProp(a, develop.NeoForgeVersion, propM)
+	}
 	return a, nil
 }
 
@@ -127,7 +130,7 @@ func (f *Architectury) SubPlatformNames() []string {
 }
 
 func (f *Architectury) fetchArchApi() (err error) {
-	f.Meta.Api, err = genericPlatformFetch[meta.ArchitecturyApiMeta](f.Conf.Api, utils.PathJoin(f.Cache, "api.json"), func(r io.Reader, m *meta.ArchitecturyApiMeta) error {
+	f.Meta.Api, err = genericPlatformFetch[meta.ArchitecturyApiMeta](f.Conf.Api, utils.PathJoin(f.Cache, "api.xml"), func(r io.Reader, m *meta.ArchitecturyApiMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.ArchitecturyApiMeta) error {
 		return xml.NewEncoder(w).Encode(m)

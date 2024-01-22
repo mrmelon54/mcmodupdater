@@ -20,18 +20,16 @@ var (
 		ForFabric,
 		ForForge,
 		ForQuilt,
+		ForNeoForge,
 		//TODO: add LiteLoader options.. https://dl.liteloader.com/versions/versions.json
 	}
 	Platforms = []develop.DevPlatform{
 		PlatformFabric,
 		PlatformForge,
 		PlatformQuilt,
+		PlatformNeoForge,
 	}
 )
-
-type platformProvider interface {
-	Platforms() map[develop.DevPlatform]develop.Develop
-}
 
 func genericPlatformFetch[T any](url, cache string, cbR func(io.Reader, *T) error, cbW func(io.Writer, T) error) (t T, err error) {
 	err = genericPlatformCacheLoad[T](cache, &t, cbR)

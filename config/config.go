@@ -10,6 +10,7 @@ type DevelopConfig struct {
 	Fabric       FabricDevelopConfig       `yaml:"fabric"`
 	Forge        ForgeDevelopConfig        `yaml:"forge"`
 	Quilt        QuiltDevelopConfig        `yaml:"quilt"`
+	NeoForge     NeoForgeDevelopConfig     `yaml:"neoforge"`
 }
 
 type ArchitecturyDevelopConfig struct {
@@ -34,4 +35,8 @@ type QuiltDevelopConfig struct {
 	Loader               string `yaml:"loader"`
 	QuiltStandardLibrary string `yaml:"quiltStandardLibrary"`
 	QuiltedFabricApi     string `yaml:"quiltedFabricApi"`
+}
+
+type NeoForgeDevelopConfig struct {
+	Api string `yaml:"api"`
 }

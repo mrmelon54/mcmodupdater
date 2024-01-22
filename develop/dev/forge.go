@@ -84,12 +84,13 @@ func (f *Forge) LatestVersion(prop develop.PropVersion, mcVersion string) (strin
 		if a, ok := shared.LatestForgeMavenVersion(shared.MavenMeta(f.Meta.Api), mcVersion); ok {
 			return a, true
 		}
+	default:
 	}
 	return "", false
 }
 
 func (f *Forge) fetchApi() (err error) {
-	f.Meta.Api, err = genericPlatformFetch[meta.ForgeApiMeta](f.Conf.Api, utils.PathJoin(f.Cache, "api.json"), func(r io.Reader, m *meta.ForgeApiMeta) error {
+	f.Meta.Api, err = genericPlatformFetch[meta.ForgeApiMeta](f.Conf.Api, utils.PathJoin(f.Cache, "api.xml"), func(r io.Reader, m *meta.ForgeApiMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.ForgeApiMeta) error {
 		return xml.NewEncoder(w).Encode(m)

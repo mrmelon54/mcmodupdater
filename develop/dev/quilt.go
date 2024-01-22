@@ -117,6 +117,7 @@ func (q *Quilt) LatestVersion(prop develop.PropVersion, mcVersion string) (strin
 		if a, ok := shared.LatestYarnVersion(q.Meta.QuiltMappings, mcVersion); ok {
 			return a.Version, ok
 		}
+	default:
 	}
 	return "", false
 }
@@ -140,7 +141,7 @@ func (q *Quilt) fetchQuiltMappings() (err error) {
 }
 
 func (q *Quilt) fetchQuiltMappingsOnLoom() (err error) {
-	q.Meta.QuiltMappingsOnLoom, err = genericPlatformFetch[meta.QuiltMappingsOnLoomMeta](q.Conf.QuiltMappingsOnLoom, utils.PathJoin(q.Cache, "quilt-mappings-loom.json"), func(r io.Reader, m *meta.QuiltMappingsOnLoomMeta) error {
+	q.Meta.QuiltMappingsOnLoom, err = genericPlatformFetch[meta.QuiltMappingsOnLoomMeta](q.Conf.QuiltMappingsOnLoom, utils.PathJoin(q.Cache, "quilt-mappings-loom.xml"), func(r io.Reader, m *meta.QuiltMappingsOnLoomMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.QuiltMappingsOnLoomMeta) error {
 		return xml.NewEncoder(w).Encode(m)
@@ -158,7 +159,7 @@ func (q *Quilt) fetchLoader() (err error) {
 }
 
 func (q *Quilt) fetchQuiltStandardLibrary() (err error) {
-	q.Meta.QuiltStandardLibrary, err = genericPlatformFetch[meta.QuiltStandardLibraryMeta](q.Conf.QuiltStandardLibrary, utils.PathJoin(q.Cache, "qsl.json"), func(r io.Reader, m *meta.QuiltStandardLibraryMeta) error {
+	q.Meta.QuiltStandardLibrary, err = genericPlatformFetch[meta.QuiltStandardLibraryMeta](q.Conf.QuiltStandardLibrary, utils.PathJoin(q.Cache, "qsl.xml"), func(r io.Reader, m *meta.QuiltStandardLibraryMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.QuiltStandardLibraryMeta) error {
 		return xml.NewEncoder(w).Encode(m)
@@ -167,7 +168,7 @@ func (q *Quilt) fetchQuiltStandardLibrary() (err error) {
 }
 
 func (q *Quilt) fetchQuiltedFabricApi() (err error) {
-	q.Meta.QuiltedFabricApi, err = genericPlatformFetch[meta.QuiltedFabricApiMeta](q.Conf.QuiltedFabricApi, utils.PathJoin(q.Cache, "qfa.json"), func(r io.Reader, m *meta.QuiltedFabricApiMeta) error {
+	q.Meta.QuiltedFabricApi, err = genericPlatformFetch[meta.QuiltedFabricApiMeta](q.Conf.QuiltedFabricApi, utils.PathJoin(q.Cache, "qfa.xml"), func(r io.Reader, m *meta.QuiltedFabricApiMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.QuiltedFabricApiMeta) error {
 		return xml.NewEncoder(w).Encode(m)

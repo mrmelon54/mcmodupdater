@@ -100,6 +100,7 @@ func (f *Fabric) LatestVersion(prop develop.PropVersion, mcVersion string) (stri
 		if a, ok := shared.LatestYarnVersion(f.Meta.Yarn, mcVersion); ok {
 			return a.Version, ok
 		}
+	default:
 	}
 	return "", false
 }
@@ -132,7 +133,7 @@ func (f *Fabric) fetchLoader() (err error) {
 }
 
 func (f *Fabric) fetchApi() (err error) {
-	f.Meta.Api, err = genericPlatformFetch[meta.FabricApiMeta](f.Conf.Api, utils.PathJoin(f.Cache, "api.json"), func(r io.Reader, m *meta.FabricApiMeta) error {
+	f.Meta.Api, err = genericPlatformFetch[meta.FabricApiMeta](f.Conf.Api, utils.PathJoin(f.Cache, "api.xml"), func(r io.Reader, m *meta.FabricApiMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.FabricApiMeta) error {
 		return xml.NewEncoder(w).Encode(m)

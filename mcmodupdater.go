@@ -115,7 +115,7 @@ func (m *McModUpdater) LoadTree(tree fs.StatFS) (*develop.PlatformVersions, erro
 }
 
 func (m *McModUpdater) VersionUpdateList(info *develop.PlatformVersions) VersionUpdateList {
-	v := make(VersionUpdateList, 0, 11)
+	v := make(VersionUpdateList, 0, 12)
 	v = m.useIfExists(v, info, develop.ModVersion)
 	v = m.useIfExists(v, info, develop.MinecraftVersion)
 	v = m.useIfExistsUpdate(v, info, develop.ArchitecturyVersion)
@@ -127,6 +127,7 @@ func (m *McModUpdater) VersionUpdateList(info *develop.PlatformVersions) Version
 	v = m.useIfExistsUpdate(v, info, develop.QuiltLoaderVersion)
 	v = m.useIfExistsUpdate(v, info, develop.QuiltFabricApiVersion)
 	v = m.useIfExistsUpdate(v, info, develop.QuiltMappingsVersion)
+	v = m.useIfExistsUpdate(v, info, develop.NeoForgeVersion)
 	return v
 }
 

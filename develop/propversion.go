@@ -27,6 +27,7 @@ const (
 	QuiltLoaderVersion    // Quilt Loader
 	QuiltFabricApiVersion // Quilted Fabric API
 	QuiltMappingsVersion  // Quilt Mappings
+	NeoForgeVersion       // NeoForge
 )
 
 var (
@@ -42,6 +43,7 @@ var (
 		QuiltLoaderVersion:    "quilt_loader_version",
 		QuiltFabricApiVersion: "quilt_fabric_api_version",
 		QuiltMappingsVersion:  "quilt_mappings",
+		NeoForgeVersion:       "neoforge_version",
 	}
 	// basically inverted propVersionKeyMap
 	propVersionFromKeys map[string]PropVersion

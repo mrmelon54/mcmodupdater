@@ -1,8 +1,8 @@
 package config
 
 import (
+	"encoding/json"
 	"github.com/MrMelon54/mcmodupdater/paths"
-	"gopkg.in/yaml.v3"
 	"os"
 	"path"
 )
@@ -30,6 +30,9 @@ func DefaultConfig() Config {
 				QuiltStandardLibrary: "https://maven.quiltmc.org/repository/release/org/quiltmc/qsl/maven-metadata.xml",
 				QuiltedFabricApi:     "https://maven.quiltmc.org/repository/release/org/quiltmc/quilted-fabric-api/quilted-fabric-api/maven-metadata.xml",
 			},
+			NeoForge: NeoForgeDevelopConfig{
+				Api: "https://maven.neoforged.net/net/neoforged/neoforge/maven-metadata.xml",
+			},
 		},
 		Cache: true,
 	}
@@ -37,18 +40,18 @@ func DefaultConfig() Config {
 
 func Load() (*Config, error) {
 	conf := DefaultConfig()
-	vFile := path.Join(paths.UserConfigDir(), "config.yml")
+	vFile := path.Join(paths.UserConfigDir(), "config.json")
 	f, err := os.Open(vFile)
 	if err != nil {
 		return &conf, nil
 	}
 
-	err = yaml.NewDecoder(f).Decode(&conf)
+	err = json.NewDecoder(f).Decode(&conf)
 	return &conf, err
 }
 
 func (c *Config) Save() error {
-	vFile := path.Join(paths.UserConfigDir(), "config.yml")
+	vFile := path.Join(paths.UserConfigDir(), "config.json")
 	err := os.MkdirAll(path.Dir(vFile), os.ModePerm)
 	if err != nil {
 		return err
@@ -59,5 +62,7 @@ func (c *Config) Save() error {
 		return err
 	}
 
-	return yaml.NewEncoder(f).Encode(c)
+	enc := json.NewEncoder(f)
+	enc.SetIndent("", "  ")
+	return enc.Encode(c)
 }

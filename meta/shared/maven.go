@@ -47,3 +47,17 @@ func LatestForgeMavenVersion(m MavenMeta, mc string) (string, bool) {
 	}
 	return "", false
 }
+
+func LatestNeoForgeMavenVersion(m MavenMeta, mc string) (string, bool) {
+	after, found := strings.CutPrefix(mc, "1.")
+	if !found {
+		return "", false
+	}
+	var latest string
+	for _, i := range m.Versioning.Versions.Version {
+		if strings.HasPrefix(i, after+".") {
+			latest = i
+		}
+	}
+	return latest, latest != ""
+}
