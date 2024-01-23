@@ -3,12 +3,12 @@ package dev
 import (
 	"encoding/xml"
 	"fmt"
-	"github.com/MrMelon54/mcmodupdater/config"
-	"github.com/MrMelon54/mcmodupdater/develop"
-	"github.com/MrMelon54/mcmodupdater/meta"
-	"github.com/MrMelon54/mcmodupdater/meta/shared"
-	"github.com/MrMelon54/mcmodupdater/utils"
 	"github.com/magiconair/properties"
+	"github.com/mrmelon54/mcmodupdater/config"
+	"github.com/mrmelon54/mcmodupdater/develop"
+	"github.com/mrmelon54/mcmodupdater/meta"
+	"github.com/mrmelon54/mcmodupdater/meta/shared"
+	"github.com/mrmelon54/mcmodupdater/utils"
 	"io"
 	"io/fs"
 )

@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/MrMelon54/mcmodupdater"
-	"github.com/MrMelon54/mcmodupdater/config"
-	"github.com/MrMelon54/mcmodupdater/develop"
-	"github.com/MrMelon54/mcmodupdater/develop/dev"
+	"github.com/mrmelon54/mcmodupdater"
+	"github.com/mrmelon54/mcmodupdater/config"
+	"github.com/mrmelon54/mcmodupdater/develop"
+	"github.com/mrmelon54/mcmodupdater/develop/dev"
 	"io/fs"
 	"os"
 )

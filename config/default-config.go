@@ -2,7 +2,7 @@ package config
 
 import (
 	"encoding/json"
-	"github.com/MrMelon54/mcmodupdater/paths"
+	"github.com/mrmelon54/mcmodupdater/paths"
 	"os"
 	"path"
 )

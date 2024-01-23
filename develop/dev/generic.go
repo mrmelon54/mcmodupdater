@@ -2,8 +2,8 @@ package dev
 
 import (
 	"errors"
-	"github.com/MrMelon54/mcmodupdater/config"
-	"github.com/MrMelon54/mcmodupdater/develop"
+	"github.com/mrmelon54/mcmodupdater/config"
+	"github.com/mrmelon54/mcmodupdater/develop"
 	"io"
 	"io/fs"
 	"net/http"
