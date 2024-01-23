@@ -75,11 +75,15 @@ func (f *Architectury) ReadVersionFile(tree fs.FS) (map[develop.PropVersion]stri
 	if err != nil {
 		return nil, fmt.Errorf("open gradle.properties: %w", err)
 	}
-	gradlePropContent, err := io.ReadAll(gradlePropFile)
+	return f.ReadVersions(gradlePropFile)
+}
+
+func (f *Architectury) ReadVersions(r io.Reader) (map[develop.PropVersion]string, error) {
+	gradlePropContent, err := io.ReadAll(r)
 	if err != nil {
-		return nil, fmt.Errorf("read gradle.properties: %w", err)
+		return nil, err
 	}
-	prop, err := properties.Load(gradlePropContent, 0)
+	prop, err := properties.Load(gradlePropContent, properties.UTF8)
 	if err != nil {
 		return nil, err
 	}
