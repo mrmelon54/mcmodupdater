@@ -160,8 +160,12 @@ func (m *McModUpdater) UpdateToVersion(out io.StringWriter, tree fs.StatFS, ver 
 	//goland:noinspection GoUnhandledErrorResult
 	defer gProp.Close()
 
+	return m.UpdateGradleProperties(out, gProp, ver)
+}
+
+func (m *McModUpdater) UpdateGradleProperties(out io.StringWriter, gProp io.Reader, ver map[develop.PropVersion]string) (err error) {
 	scanner := bufio.NewScanner(gProp)
-	for scanner.Scan() {
+	for scanner.Scan() && err == nil {
 		t := scanner.Text()
 		if strings.TrimSpace(t) != "" {
 			if oneProp, err := properties.LoadString(t); err == nil {
@@ -169,15 +173,17 @@ func (m *McModUpdater) UpdateToVersion(out io.StringWriter, tree fs.StatFS, ver 
 				if len(k) == 1 {
 					if p, ok := develop.PropVersionFromKey(k[0]); ok {
 						if p2, ok := ver[p]; ok {
-							_, _ = out.WriteString(p.Key() + "=" + p2 + "\n")
+							_, err = out.WriteString(p.Key() + "=" + p2 + "\n")
 							continue
 						}
 					}
 				}
 			}
 		}
-		_, _ = out.WriteString(t + "\n")
-		continue
+		_, err = out.WriteString(t + "\n")
 	}
-	return nil
+	if err == nil {
+		err = scanner.Err()
+	}
+	return err
 }
