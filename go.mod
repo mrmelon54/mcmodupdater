@@ -3,6 +3,7 @@ module github.com/mrmelon54/mcmodupdater
 go 1.20
 
 require (
+	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/komkom/toml v0.1.2
 	github.com/magiconair/properties v1.8.7
 	github.com/wessie/appdirs v0.0.0-20141031215813-6573e894f8e2

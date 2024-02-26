@@ -11,7 +11,7 @@ func DefaultConfig() Config {
 	return Config{
 		Develop: DevelopConfig{
 			Architectury: ArchitecturyDevelopConfig{
-				Api: "https://maven.architectury.dev/dev/architectury/architectury/maven-metadata.xml",
+				Api: "https://api.modrinth.com/v2/project/architectury-api/version",
 			},
 			Fabric: FabricDevelopConfig{
 				Game:   "https://meta.fabricmc.net/v2/versions/game",

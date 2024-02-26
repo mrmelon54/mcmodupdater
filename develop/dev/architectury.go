@@ -1,12 +1,12 @@
 package dev
 
 import (
-	"encoding/xml"
+	"encoding/json"
 	"fmt"
 	"github.com/magiconair/properties"
 	"github.com/mrmelon54/mcmodupdater/config"
 	"github.com/mrmelon54/mcmodupdater/develop"
-	"github.com/mrmelon54/mcmodupdater/meta"
+	"github.com/mrmelon54/mcmodupdater/meta/shared"
 	"github.com/mrmelon54/mcmodupdater/utils"
 	"io"
 	"io/fs"
@@ -24,7 +24,7 @@ type Architectury struct {
 
 type ArchitecturyMeta struct {
 	done chan struct{}
-	Api  meta.ArchitecturyApiMeta
+	Api  shared.ModrinthVersionList
 }
 
 func ForArchitectury(conf config.DevelopConfig, cache string) develop.Develop {
@@ -114,8 +114,9 @@ func (f *Architectury) ReadVersions(r io.Reader) (map[develop.PropVersion]string
 }
 
 func (f *Architectury) LatestVersion(prop develop.PropVersion, mcVersion string) (string, bool) {
+	latestArchApi := f.Meta.Api.FilterGameVersions(mcVersion).GetLatest()
 	if prop == develop.ArchitecturyVersion {
-		return f.Meta.Api.Versioning.Release, true
+		return latestArchApi, true
 	}
 	for _, p := range f.SubPlatforms {
 		if a, ok := p.LatestVersion(prop, mcVersion); ok {
@@ -137,10 +138,10 @@ func (f *Architectury) SubPlatformNames() []string {
 }
 
 func (f *Architectury) fetchArchApi() (err error) {
-	f.Meta.Api, err = genericPlatformFetch[meta.ArchitecturyApiMeta](f.Conf.Api, utils.PathJoin(f.Cache, "api.xml"), func(r io.Reader, m *meta.ArchitecturyApiMeta) error {
-		return xml.NewDecoder(r).Decode(m)
-	}, func(w io.Writer, m meta.ArchitecturyApiMeta) error {
-		return xml.NewEncoder(w).Encode(m)
+	f.Meta.Api, err = genericPlatformFetch[shared.ModrinthVersionList](f.Conf.Api, utils.PathJoin(f.Cache, "api.json"), func(r io.Reader, m *shared.ModrinthVersionList) error {
+		return json.NewDecoder(r).Decode(m)
+	}, func(w io.Writer, m shared.ModrinthVersionList) error {
+		return json.NewEncoder(w).Encode(m)
 	})
 	return err
 }
