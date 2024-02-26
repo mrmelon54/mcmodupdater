@@ -8,7 +8,7 @@ type Develop interface {
 	Platform() DevPlatform
 	FetchCalls() []DevFetch
 	ValidTree(tree fs.FS) bool
-	ReadVersionFile(tree fs.FS) (map[PropVersion]string, error)
+	ReadVersionFile(tree fs.FS, name string) (map[PropVersion]string, error)
 	LatestVersion(prop PropVersion, mcVersion string) (string, bool)
 }
 

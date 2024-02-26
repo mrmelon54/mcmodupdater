@@ -9,6 +9,7 @@ import (
 	"github.com/mrmelon54/mcmodupdater/develop/dev"
 	"io/fs"
 	"os"
+	"path/filepath"
 )
 
 func main() {
@@ -22,11 +23,13 @@ func main() {
 	var noCache bool
 	var mcVersion string
 	var wdPath string
+	var propsPath string
 
 	flag.BoolVar(&dryFlag, "d", false, "Dry-run outputs the generated properties file instead of editing the file")
 	flag.BoolVar(&noCache, "nocache", false, "Use flag to disable cache")
 	flag.StringVar(&mcVersion, "mc", "", "Select the Minecraft version to update to, defaults to the current version")
 	flag.StringVar(&wdPath, "p", cwd, "Change project path (defaults to current directory)")
+	flag.StringVar(&propsPath, "f", "gradle.properties", "Use custom project properties (defaults to gradle.properties)")
 	flag.Parse()
 
 	conf, err := config.Load()
@@ -52,7 +55,7 @@ func main() {
 	}
 
 	tree := os.DirFS(wdPath).(fs.StatFS)
-	info, err := mcm.LoadTree(tree)
+	info, err := mcm.LoadTree(tree, propsPath)
 	if err != nil {
 		errPrintln("Error:", err)
 		os.Exit(1)
@@ -104,7 +107,7 @@ func main() {
 
 	if dryFlag {
 		// output the updated properties file to stdout
-		err := mcm.UpdateToVersion(os.Stdout, tree, ver.ChangeToLatest())
+		err := mcm.UpdateToVersion(os.Stdout, tree, propsPath, ver.ChangeToLatest())
 		if err != nil {
 			errPrintln("[-] Failed to update version numbers:", err)
 			os.Exit(1)
@@ -112,16 +115,19 @@ func main() {
 	} else {
 		// create temporary update file
 		// this prevents accidentally destroying the original gradle properties
-		uMcm, err := os.Create(".update.mcmodupdater")
+		tmpPath := filepath.Join(wdPath, ".update.mcmodupdater")
+		propsFullPath := filepath.Join(wdPath, propsPath)
+
+		uMcm, err := os.Create(tmpPath)
 		if err != nil {
-			errPrintln("[-] Failed to open '.update.mcmodupdater'")
+			errPrintf("[-] Failed to open '%s'", tmpPath)
 			os.Exit(1)
 		}
 		//goland:noinspection GoUnhandledErrorResult
 		defer uMcm.Close()
 
 		// output the updated properties file
-		err = mcm.UpdateToVersion(uMcm, tree, ver.ChangeToLatest())
+		err = mcm.UpdateToVersion(uMcm, tree, propsPath, ver.ChangeToLatest())
 		if err != nil {
 			errPrintln("[-] Failed to update version numbers:", err)
 			os.Exit(1)
@@ -129,9 +135,9 @@ func main() {
 
 		// if everything succeeded then move the temporary update file
 		// to 'gradle.properties'
-		err = os.Rename(".update.mcmodupdater", "gradle.properties")
+		err = os.Rename(tmpPath, propsFullPath)
 		if err != nil {
-			errPrintln("[-] Failed to move '.update.mcmodupdater' => '.gradle.properties'")
+			errPrintf("[-] Failed to move '%s' => '%s'", tmpPath, propsFullPath)
 			os.Exit(1)
 		}
 
@@ -151,4 +157,8 @@ func fetchCalls(platform develop.Develop) error {
 
 func errPrintln(a ...any) {
 	_, _ = fmt.Fprintln(os.Stderr, a...)
+}
+
+func errPrintf(format string, a ...any) {
+	_, _ = fmt.Fprintf(os.Stderr, format, a)
 }

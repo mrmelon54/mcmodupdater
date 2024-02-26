@@ -55,8 +55,11 @@ func (f *NeoForge) ValidTree(tree fs.FS) bool {
 	return ok
 }
 
-func (f *NeoForge) ReadVersionFile(tree fs.FS) (map[develop.PropVersion]string, error) {
-	gradlePropFile, err := tree.Open("gradle.properties")
+func (f *NeoForge) ReadVersionFile(tree fs.FS, name string) (map[develop.PropVersion]string, error) {
+	if name == "" {
+		name = "gradle.properties"
+	}
+	gradlePropFile, err := tree.Open(name)
 	if err != nil {
 		return nil, fmt.Errorf("open gradle.properties: %w", err)
 	}
@@ -78,7 +81,6 @@ func (f *NeoForge) ReadVersionFile(tree fs.FS) (map[develop.PropVersion]string, 
 }
 
 func (f *NeoForge) LatestVersion(prop develop.PropVersion, mcVersion string) (string, bool) {
-	println("neoforge latest version", prop)
 	switch prop {
 	case develop.NeoForgeVersion:
 		if a, ok := shared.LatestNeoForgeMavenVersion(shared.MavenMeta(f.Meta.Api), mcVersion); ok {

@@ -80,7 +80,7 @@ func (m *McModUpdater) detectPlatformFromTree(tree fs.StatFS) (develop.Develop, 
 	return nil, false
 }
 
-func (m *McModUpdater) LoadTree(tree fs.StatFS) (*develop.PlatformVersions, error) {
+func (m *McModUpdater) LoadTree(tree fs.StatFS, propsName string) (*develop.PlatformVersions, error) {
 	useArch := m.platArch.ValidTree(tree)
 
 	var platform develop.Develop
@@ -103,7 +103,7 @@ func (m *McModUpdater) LoadTree(tree fs.StatFS) (*develop.PlatformVersions, erro
 		return nil, fmt.Errorf("cannot find valid platform")
 	}
 
-	versions, err := platform.ReadVersionFile(tree)
+	versions, err := platform.ReadVersionFile(tree, propsName)
 	if err != nil {
 		return nil, err
 	}
@@ -152,8 +152,8 @@ func (m *McModUpdater) useIfExistsUpdate(v VersionUpdateList, branch *develop.Pl
 	return v
 }
 
-func (m *McModUpdater) UpdateToVersion(out io.StringWriter, tree fs.StatFS, ver map[develop.PropVersion]string) error {
-	gProp, err := tree.Open("gradle.properties")
+func (m *McModUpdater) UpdateToVersion(out io.StringWriter, tree fs.StatFS, name string, ver map[develop.PropVersion]string) error {
+	gProp, err := tree.Open(name)
 	if err != nil {
 		return err
 	}

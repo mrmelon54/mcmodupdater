@@ -62,8 +62,11 @@ func (f *Fabric) ValidTree(tree fs.FS) bool {
 	return ok
 }
 
-func (f *Fabric) ReadVersionFile(tree fs.FS) (map[develop.PropVersion]string, error) {
-	gradlePropFile, err := tree.Open("gradle.properties")
+func (f *Fabric) ReadVersionFile(tree fs.FS, name string) (map[develop.PropVersion]string, error) {
+	if name == "" {
+		name = "gradle.properties"
+	}
+	gradlePropFile, err := tree.Open(name)
 	if err != nil {
 		return nil, fmt.Errorf("open gradle.properties: %w", err)
 	}
