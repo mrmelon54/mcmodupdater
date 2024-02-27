@@ -50,10 +50,10 @@ func (f *Fabric) Platform() develop.DevPlatform {
 
 func (f *Fabric) FetchCalls() []develop.DevFetch {
 	return []develop.DevFetch{
-		{"Game", f.fetchGame},
-		{"Yarn", f.fetchYarn},
-		{"Loader", f.fetchLoader},
-		{"API", f.fetchApi},
+		{"Game", f.FetchGame},
+		{"Yarn", f.FetchYarn},
+		{"Loader", f.FetchLoader},
+		{"API", f.FetchApi},
 	}
 }
 
@@ -108,7 +108,7 @@ func (f *Fabric) LatestVersion(prop develop.PropVersion, mcVersion string) (stri
 	return "", false
 }
 
-func (f *Fabric) fetchGame() (err error) {
+func (f *Fabric) FetchGame() (err error) {
 	f.Meta.Game, err = genericPlatformFetch[meta.FabricGameMeta](f.Conf.Game, utils.PathJoin(f.Cache, "game.json"), func(r io.Reader, m *meta.FabricGameMeta) error {
 		return json.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.FabricGameMeta) error {
@@ -117,7 +117,7 @@ func (f *Fabric) fetchGame() (err error) {
 	return err
 }
 
-func (f *Fabric) fetchYarn() (err error) {
+func (f *Fabric) FetchYarn() (err error) {
 	f.Meta.Yarn, err = genericPlatformFetch[meta.FabricYarnMeta](f.Conf.Yarn, utils.PathJoin(f.Cache, "yarn.json"), func(r io.Reader, m *meta.FabricYarnMeta) error {
 		return json.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.FabricYarnMeta) error {
@@ -126,7 +126,7 @@ func (f *Fabric) fetchYarn() (err error) {
 	return err
 }
 
-func (f *Fabric) fetchLoader() (err error) {
+func (f *Fabric) FetchLoader() (err error) {
 	f.Meta.Loader, err = genericPlatformFetch[meta.FabricLoaderMeta](f.Conf.Loader, utils.PathJoin(f.Cache, "loader.json"), func(r io.Reader, m *meta.FabricLoaderMeta) error {
 		return json.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.FabricLoaderMeta) error {
@@ -135,7 +135,7 @@ func (f *Fabric) fetchLoader() (err error) {
 	return err
 }
 
-func (f *Fabric) fetchApi() (err error) {
+func (f *Fabric) FetchApi() (err error) {
 	f.Meta.Api, err = genericPlatformFetch[meta.FabricApiMeta](f.Conf.Api, utils.PathJoin(f.Cache, "api.xml"), func(r io.Reader, m *meta.FabricApiMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.FabricApiMeta) error {

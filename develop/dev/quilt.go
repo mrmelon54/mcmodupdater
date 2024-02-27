@@ -54,12 +54,12 @@ func (q *Quilt) Platform() develop.DevPlatform {
 
 func (q *Quilt) FetchCalls() []develop.DevFetch {
 	return []develop.DevFetch{
-		{"Game", q.fetchGame},
-		{"Mappings", q.fetchQuiltMappings},
-		{"Mappings on Loom", q.fetchQuiltMappingsOnLoom},
-		{"Loader", q.fetchLoader},
-		{"Standard Library", q.fetchQuiltStandardLibrary},
-		{"Fabric Api", q.fetchQuiltedFabricApi},
+		{"Game", q.FetchGame},
+		{"Mappings", q.FetchQuiltMappings},
+		{"Mappings on Loom", q.FetchQuiltMappingsOnLoom},
+		{"Loader", q.FetchLoader},
+		{"Standard Library", q.FetchQuiltStandardLibrary},
+		{"Fabric Api", q.FetchQuiltedFabricApi},
 	}
 }
 
@@ -125,7 +125,7 @@ func (q *Quilt) LatestVersion(prop develop.PropVersion, mcVersion string) (strin
 	return "", false
 }
 
-func (q *Quilt) fetchGame() (err error) {
+func (q *Quilt) FetchGame() (err error) {
 	q.Meta.Game, err = genericPlatformFetch[meta.QuiltGameMeta](q.Conf.Game, utils.PathJoin(q.Cache, "game.json"), func(r io.Reader, m *meta.QuiltGameMeta) error {
 		return json.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.QuiltGameMeta) error {
@@ -134,7 +134,7 @@ func (q *Quilt) fetchGame() (err error) {
 	return err
 }
 
-func (q *Quilt) fetchQuiltMappings() (err error) {
+func (q *Quilt) FetchQuiltMappings() (err error) {
 	q.Meta.QuiltMappings, err = genericPlatformFetch[meta.QuiltMappingsMeta](q.Conf.QuiltMappings, utils.PathJoin(q.Cache, "quilt-mappings.json"), func(r io.Reader, m *meta.QuiltMappingsMeta) error {
 		return json.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.QuiltMappingsMeta) error {
@@ -143,7 +143,7 @@ func (q *Quilt) fetchQuiltMappings() (err error) {
 	return err
 }
 
-func (q *Quilt) fetchQuiltMappingsOnLoom() (err error) {
+func (q *Quilt) FetchQuiltMappingsOnLoom() (err error) {
 	q.Meta.QuiltMappingsOnLoom, err = genericPlatformFetch[meta.QuiltMappingsOnLoomMeta](q.Conf.QuiltMappingsOnLoom, utils.PathJoin(q.Cache, "quilt-mappings-loom.xml"), func(r io.Reader, m *meta.QuiltMappingsOnLoomMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.QuiltMappingsOnLoomMeta) error {
@@ -152,7 +152,7 @@ func (q *Quilt) fetchQuiltMappingsOnLoom() (err error) {
 	return err
 }
 
-func (q *Quilt) fetchLoader() (err error) {
+func (q *Quilt) FetchLoader() (err error) {
 	q.Meta.Loader, err = genericPlatformFetch[meta.QuiltLoaderMeta](q.Conf.Loader, utils.PathJoin(q.Cache, "loader.json"), func(r io.Reader, m *meta.QuiltLoaderMeta) error {
 		return json.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.QuiltLoaderMeta) error {
@@ -161,7 +161,7 @@ func (q *Quilt) fetchLoader() (err error) {
 	return err
 }
 
-func (q *Quilt) fetchQuiltStandardLibrary() (err error) {
+func (q *Quilt) FetchQuiltStandardLibrary() (err error) {
 	q.Meta.QuiltStandardLibrary, err = genericPlatformFetch[meta.QuiltStandardLibraryMeta](q.Conf.QuiltStandardLibrary, utils.PathJoin(q.Cache, "qsl.xml"), func(r io.Reader, m *meta.QuiltStandardLibraryMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.QuiltStandardLibraryMeta) error {
@@ -170,7 +170,7 @@ func (q *Quilt) fetchQuiltStandardLibrary() (err error) {
 	return err
 }
 
-func (q *Quilt) fetchQuiltedFabricApi() (err error) {
+func (q *Quilt) FetchQuiltedFabricApi() (err error) {
 	q.Meta.QuiltedFabricApi, err = genericPlatformFetch[meta.QuiltedFabricApiMeta](q.Conf.QuiltedFabricApi, utils.PathJoin(q.Cache, "qfa.xml"), func(r io.Reader, m *meta.QuiltedFabricApiMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.QuiltedFabricApiMeta) error {

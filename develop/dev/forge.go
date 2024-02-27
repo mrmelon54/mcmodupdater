@@ -46,7 +46,7 @@ func (f *Forge) Platform() develop.DevPlatform {
 
 func (f *Forge) FetchCalls() []develop.DevFetch {
 	return []develop.DevFetch{
-		{"API", f.fetchApi},
+		{"API", f.FetchApi},
 	}
 }
 
@@ -92,7 +92,7 @@ func (f *Forge) LatestVersion(prop develop.PropVersion, mcVersion string) (strin
 	return "", false
 }
 
-func (f *Forge) fetchApi() (err error) {
+func (f *Forge) FetchApi() (err error) {
 	f.Meta.Api, err = genericPlatformFetch[meta.ForgeApiMeta](f.Conf.Api, utils.PathJoin(f.Cache, "api.xml"), func(r io.Reader, m *meta.ForgeApiMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.ForgeApiMeta) error {

@@ -46,7 +46,7 @@ func (f *NeoForge) Platform() develop.DevPlatform {
 
 func (f *NeoForge) FetchCalls() []develop.DevFetch {
 	return []develop.DevFetch{
-		{"API", f.fetchApi},
+		{"API", f.FetchApi},
 	}
 }
 
@@ -91,7 +91,7 @@ func (f *NeoForge) LatestVersion(prop develop.PropVersion, mcVersion string) (st
 	return "", false
 }
 
-func (f *NeoForge) fetchApi() (err error) {
+func (f *NeoForge) FetchApi() (err error) {
 	f.Meta.Api, err = genericPlatformFetch[meta.NeoForgeApiMeta](f.Conf.Api, path.Join(f.Cache, "api.xml"), func(r io.Reader, m *meta.NeoForgeApiMeta) error {
 		return xml.NewDecoder(r).Decode(m)
 	}, func(w io.Writer, m meta.NeoForgeApiMeta) error {
