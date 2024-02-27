@@ -92,9 +92,8 @@ func (f *Fabric) ReadVersionFile(tree fs.FS, name string) (map[develop.PropVersi
 func (f *Fabric) LatestVersion(prop develop.PropVersion, mcVersion string) (string, bool) {
 	switch prop {
 	case develop.FabricLoaderVersion:
-		if len(f.Meta.Loader) > 0 {
-			return f.Meta.Loader[0].Version, true
-		}
+		a, err := f.LatestLoaderVersion(mcVersion)
+		return a, err == nil
 	case develop.FabricApiVersion:
 		if a, ok := shared.LatestMavenVersion(shared.MavenMeta(f.Meta.Api), mcVersion); ok {
 			return a, true
@@ -106,6 +105,17 @@ func (f *Fabric) LatestVersion(prop develop.PropVersion, mcVersion string) (stri
 	default:
 	}
 	return "", false
+}
+
+func (f *Fabric) LatestLoaderVersion(_ string) (string, error) {
+	err := f.FetchLoader()
+	if err != nil {
+		return "", err
+	}
+	if len(f.Meta.Loader) < 1 {
+		return "", fmt.Errorf("no fabric loaders found")
+	}
+	return f.Meta.Loader[0].Version, nil
 }
 
 func (f *Fabric) FetchGame() (err error) {

@@ -109,9 +109,8 @@ func (q *Quilt) ReadVersionFile(tree fs.FS, name string) (map[develop.PropVersio
 func (q *Quilt) LatestVersion(prop develop.PropVersion, mcVersion string) (string, bool) {
 	switch prop {
 	case develop.QuiltLoaderVersion:
-		if len(q.Meta.Loader) > 0 {
-			return q.Meta.Loader[0].Version, true
-		}
+		a, err := q.LatestLoaderVersion(mcVersion)
+		return a, err == nil
 	case develop.QuiltFabricApiVersion:
 		if a, ok := shared.LatestMavenVersion(shared.MavenMeta(q.Meta.QuiltedFabricApi), mcVersion); ok {
 			return a, ok
@@ -123,6 +122,17 @@ func (q *Quilt) LatestVersion(prop develop.PropVersion, mcVersion string) (strin
 	default:
 	}
 	return "", false
+}
+
+func (q *Quilt) LatestLoaderVersion(_ string) (string, error) {
+	err := q.FetchLoader()
+	if err != nil {
+		return "", err
+	}
+	if len(q.Meta.Loader) < 1 {
+		return "", fmt.Errorf("no fabric loaders found")
+	}
+	return q.Meta.Loader[0].Version, nil
 }
 
 func (q *Quilt) FetchGame() (err error) {

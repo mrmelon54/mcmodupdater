@@ -10,6 +10,7 @@ type Develop interface {
 	ValidTree(tree fs.FS) bool
 	ReadVersionFile(tree fs.FS, name string) (map[PropVersion]string, error)
 	LatestVersion(prop PropVersion, mcVersion string) (string, bool)
+	LatestLoaderVersion(mcVersion string) (string, error)
 }
 
 type DevPlatform struct {

@@ -83,12 +83,23 @@ func (f *NeoForge) ReadVersionFile(tree fs.FS, name string) (map[develop.PropVer
 func (f *NeoForge) LatestVersion(prop develop.PropVersion, mcVersion string) (string, bool) {
 	switch prop {
 	case develop.NeoForgeVersion:
-		if a, ok := shared.LatestNeoForgeMavenVersion(shared.MavenMeta(f.Meta.Api), mcVersion); ok {
-			return a, true
-		}
+		a, err := f.LatestLoaderVersion(mcVersion)
+		return a, err == nil
 	default:
 	}
 	return "", false
+}
+
+func (f *NeoForge) LatestLoaderVersion(mcVersion string) (string, error) {
+	err := f.FetchApi()
+	if err != nil {
+		return "", err
+	}
+	version, ok := shared.LatestNeoForgeMavenVersion(shared.MavenMeta(f.Meta.Api), mcVersion)
+	if !ok {
+		return "", fmt.Errorf("no forge loaders found")
+	}
+	return version, nil
 }
 
 func (f *NeoForge) FetchApi() (err error) {
