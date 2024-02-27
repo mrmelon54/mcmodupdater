@@ -126,6 +126,10 @@ func (f *Architectury) LatestVersion(prop develop.PropVersion, mcVersion string)
 	return "", false
 }
 
+func (f *Architectury) LatestLoaderVersion(_ string) (string, error) {
+	return "", fmt.Errorf("no loader defined")
+}
+
 func (f *Architectury) SubPlatformNames() []string {
 	a := make([]string, len(f.SubPlatforms))
 	z := 0

@@ -160,5 +160,5 @@ func errPrintln(a ...any) {
 }
 
 func errPrintf(format string, a ...any) {
-	_, _ = fmt.Fprintf(os.Stderr, format, a)
+	_, _ = fmt.Fprintf(os.Stderr, format, a...)
 }
