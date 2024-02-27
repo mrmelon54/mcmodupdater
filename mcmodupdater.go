@@ -43,7 +43,8 @@ type VersionUpdateItem struct {
 
 func NewMcModUpdater(conf *config.Config) (*McModUpdater, error) {
 	if conf == nil {
-		*conf = config.DefaultConfig()
+		c := config.DefaultConfig()
+		conf = &c
 	}
 	var cache, platCache string
 	if conf.Cache {
